@@ -16,7 +16,8 @@ namespace L02P02_2022JH650_2022RS650.Controllers
         }
         public IActionResult CrearCliente(clientes cliente)
         {
-            cliente.id = 0;
+            var ultimoId = _libreriaDBcontext.clientes.Max(c => (int?)c.id) ?? 0;
+            cliente.id = ultimoId + 1;
             cliente.created_at = DateTime.Now;
             _libreriaDBcontext.Add(cliente);
             _libreriaDBcontext.SaveChanges();
