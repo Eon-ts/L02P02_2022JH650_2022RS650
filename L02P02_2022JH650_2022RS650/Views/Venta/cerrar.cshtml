@@ -1,0 +1,104 @@
+﻿@{
+    var clientes = (L02P02_2022JH650_2022RS650.Models.clientes)ViewData["pedidoEncabezado"];
+    var primerPedido = (ViewData["pedidoDetalle"] as IEnumerable<dynamic>)?.FirstOrDefault();
+}
+
+    
+
+
+@{
+    <h1>Venta de Libros</h1>
+    <br />
+    <h1>Datos Cliente</h1>
+        @Html.Hidden("id_equipo", clientes.id)
+        <div class="form-group row mb-4">
+            <h2>Proceso de venta</h2>
+        </div>
+
+        <div class="form-group row mb-4">
+            <h3>Datos del Cliente</h3>
+        </div>
+
+        <div class="form-group row mb-4">
+            <div class="col-sm-2">
+                @Html.Label("lblNombre", "Nombre")
+            </div>
+            <div class="col-sm-4">
+                @Html.TextBox("nombre", clientes.nombre, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-sm-2">
+                @Html.Label("lblApellido", "Apellido")
+            </div>
+            <div class="col-sm-4">
+                @Html.TextBox("apellido", clientes.apellido, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        </div>
+
+        <div class="form-group row mb-4">
+            <div class="col-sm-2">
+                @Html.Label("lblEmail", "Email")
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBox("email", clientes.email, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        </div>
+
+        <div class="form-group row mb-4">
+            <div class="col-sm-2">
+                @Html.Label("lblDireccion", "Dirección")
+            </div>
+            <div class="col-sm-10">
+                @Html.TextArea("direccion", clientes.direccion, new { @class = "form-control", @rows = "1", @readonly = "readonly" })
+            </div>
+        </div>
+
+    <form asp-action="cerrarVenta">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>Carrito</h3>
+                    <span class="badge bg-primary rounded-pill" id="cantidad-libros">0</span>
+                </div>
+                <div class="card-body">                
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Equipo</th>
+                                    <th>Descripcion</th>
+                                    <th>Marca</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pedidoDe in (IEnumerable<dynamic>)ViewData["pedidoDetalle"])
+                                {
+                                    <tr>
+                                        <td>@pedidoDe.titulo</td>
+                                        <td>@pedidoDe.precio</td>
+                                        <td>@pedidoDe.autor</td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    <div class="d-flex justify-content-between">
+                        <span>Total (USD)</span>
+                        <strong id="total-precio">$ @ViewBag.total</strong>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    @if (primerPedido != null)
+                    {
+                        @Html.ActionLink("Cerrar Venta", "actualizarencabezado",
+                                  new { id = primerPedido.Idpedido },
+                             new { @class = "btn btn-warning" })
+                    }
+                    else
+                    {
+                        <span>No hay pedidos disponibles.</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+}

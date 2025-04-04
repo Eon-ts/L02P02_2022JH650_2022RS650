@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using L02P02_2022JH650_2022RS650.Models;
+using System.Collections.Immutable;
 
 namespace L02P02_2022JH650_2022RS650.Controllers
 {
@@ -61,6 +62,10 @@ namespace L02P02_2022JH650_2022RS650.Controllers
 
                 ViewBag.Carrito = carrito;
                 ViewBag.Total = pedidoEncabezado.total;
+                ViewBag.id2 = pedidoEncabezado.id;
+
+
+
             }
 
             return View();
@@ -79,7 +84,7 @@ namespace L02P02_2022JH650_2022RS650.Controllers
             {
                 return RedirectToAction("Index");
             }
-
+            
             // Obtener el libro
             var libro = _libreriaDBcontext.libros.FirstOrDefault(l => l.id == libroId);
             if (libro == null || libro.estado == 'O') // Comprobación sobre la existencia de libro y estado (Que no esté ocupado)
@@ -109,6 +114,54 @@ namespace L02P02_2022JH650_2022RS650.Controllers
             _libreriaDBcontext.SaveChanges();
 
             return RedirectToAction("ListadoLibros");
+        }
+        // prototipo 03
+        public IActionResult cerrar(int id)
+        {
+
+            //Se pasa un id de pedido_encabezado para encontrar el cliente
+            var pedidoEncabezado = (from p in _libreriaDBcontext.pedido_encabezado
+                                    join c in _libreriaDBcontext.clientes on p.id_cliente equals c.id
+                                    where p.id == id
+                                    select c).FirstOrDefault();
+
+
+            ViewData["pedidoEncabezado"] = pedidoEncabezado;
+
+            var pedidoDetalle = (from p in _libreriaDBcontext.pedido_detalle
+                                 join l in _libreriaDBcontext.libros on p.id_libro equals l.id
+                                 join a in _libreriaDBcontext.autores on l.id_autor equals a.id
+                                 where p.id_pedido == id
+                                 select new
+                                 {
+                                     Idpedido = p.id_pedido,
+                                     Id = p.id,
+                                     titulo = l.nombre,
+                                     precio = l.precio,
+                                     autor = a.autor
+                                 }).ToList();
+            ViewData["pedidoDetalle"] = pedidoDetalle;
+
+
+            var total = (from p in _libreriaDBcontext.pedido_detalle
+                         join pe in _libreriaDBcontext.pedido_encabezado on p.id_libro equals pe.id
+                         where p.id_pedido == id
+                         select pe.total).FirstOrDefault();
+            ViewBag.total = total;
+
+
+            var ultimoId = _libreriaDBcontext.pedido_encabezado.Max(c => (int?)c.id) ?? 0;
+            return View();
+        }
+        public IActionResult actualizarencabeezado(int id)
+        {
+            var pedidoEncabezado = (from p in _libreriaDBcontext.pedido_encabezado
+                                    join c in _libreriaDBcontext.clientes on p.id equals c.id
+                                    where p.id == id
+                                    select c).FirstOrDefault();
+            ViewData["pedidoEncabezado"] = pedidoEncabezado;
+
+            return View();
         }
 
     }
