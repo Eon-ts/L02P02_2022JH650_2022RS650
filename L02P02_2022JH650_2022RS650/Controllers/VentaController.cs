@@ -16,6 +16,7 @@ namespace L02P02_2022JH650_2022RS650.Controllers
         }
         public IActionResult CrearCliente(clientes cliente)
         {
+            cliente.id = 0;
             cliente.created_at = DateTime.Now;
             _libreriaDBcontext.Add(cliente);
             _libreriaDBcontext.SaveChanges();
