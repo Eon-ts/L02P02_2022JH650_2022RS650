@@ -87,16 +87,11 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    @if (primerPedido != null)
-                    {
-                        @Html.ActionLink("Cerrar Venta", "actualizarencabezado",
+                    @Html.ActionLink("Cerrar Venta", "actualizarencabeezado", "Venta",
                                   new { id = primerPedido.Idpedido },
                              new { @class = "btn btn-warning" })
-                    }
-                    else
-                    {
-                        <span>No hay pedidos disponibles.</span>
-                    }
+
+
                 </div>
             </div>
         </div>

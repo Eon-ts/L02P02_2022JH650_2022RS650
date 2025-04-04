@@ -124,8 +124,6 @@ namespace L02P02_2022JH650_2022RS650.Controllers
                                     join c in _libreriaDBcontext.clientes on p.id_cliente equals c.id
                                     where p.id == id
                                     select c).FirstOrDefault();
-
-
             ViewData["pedidoEncabezado"] = pedidoEncabezado;
 
             var pedidoDetalle = (from p in _libreriaDBcontext.pedido_detalle
@@ -144,7 +142,7 @@ namespace L02P02_2022JH650_2022RS650.Controllers
 
 
             var total = (from p in _libreriaDBcontext.pedido_detalle
-                         join pe in _libreriaDBcontext.pedido_encabezado on p.id_libro equals pe.id
+                         join pe in _libreriaDBcontext.pedido_encabezado on p.id_pedido equals pe.id
                          where p.id_pedido == id
                          select pe.total).FirstOrDefault();
             ViewBag.total = total;
@@ -155,13 +153,16 @@ namespace L02P02_2022JH650_2022RS650.Controllers
         }
         public IActionResult actualizarencabeezado(int id)
         {
-            var pedidoEncabezado = (from p in _libreriaDBcontext.pedido_encabezado
-                                    join c in _libreriaDBcontext.clientes on p.id equals c.id
-                                    where p.id == id
-                                    select c).FirstOrDefault();
-            ViewData["pedidoEncabezado"] = pedidoEncabezado;
+            var pedidoEncabezado = _libreriaDBcontext.pedido_encabezado.FirstOrDefault(p => p.id == id);
+            if (pedidoEncabezado == null)
+            {
+                return NotFound();
+            }
+            pedidoEncabezado.estado = "C";
+            _libreriaDBcontext.pedido_encabezado.Update(pedidoEncabezado);
+            _libreriaDBcontext.SaveChanges();
 
-            return View();
+            return RedirectToAction("Index");
         }
 
     }
