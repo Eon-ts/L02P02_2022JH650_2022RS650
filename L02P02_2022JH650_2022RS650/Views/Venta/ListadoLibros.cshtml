@@ -1,0 +1,92 @@
+﻿@{
+    <h1>Venta de Libros</h1>
+    <br />
+    <form asp-action="AgregarAlCarrito">
+        <div class="form-group row mb-4">
+            <h2>Listado de Libros</h2>
+        </div>
+
+        <div class="form-group row mb-4">
+            <h3>Libros Disponibles</h3>
+        </div>
+
+        <div class="form-group row mb-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var libro in ViewBag.Libros)
+                    {
+                        <tr>
+                            <td>@libro.nombre</td>
+                            <td>@libro.descripcion</td>
+                            <td>@libro.precio</td>
+                            <td>
+                                @if (libro.estado != 'O')  // Verificar si el libro no está ocupado
+                                {
+                                    <form asp-action="AgregarAlCarrito" method="post">
+                                        <input type="hidden" name="libroId" value="@libro.id" />
+                                        <button type="submit" class="btn btn-primary">Agregar al Carrito</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Agotado</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+    <hr />
+
+    <!-- Mostrar el carrito -->
+    <h3>Carrito de Compras</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.Carrito != null)
+            {
+                foreach (var item in ViewBag.Carrito)
+                {
+                    <tr>
+                        <td>@item.libro_nombre</td>
+                        <td>@item.precio</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2">No hay productos en el carrito.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="form-group row mb-4">
+        <h4>Total: @ViewBag.Total</h4>
+    </div>
+
+    <form asp-action="Cerrar">
+        <div class="form-group row mb-4">
+            <div class="col-sm-12">
+                <input type="submit" class="btn btn-success" value="Completar" style="width: 100%" />
+            </div>
+        </div>
+    </form>
+}
